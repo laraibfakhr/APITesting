@@ -1,0 +1,293 @@
+{
+	"info": {
+		"_postman_id": "bdc015fe-423f-4635-95e2-036157c33720",
+		"name": "LibraryAPIs-Automation1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "3535733",
+		"_collection_link": "https://www.postman.com/crimson-satellite-8442/workspace/api-testing-beginner-to-advanced/collection/3535733-bdc015fe-423f-4635-95e2-036157c33720?action=share&creator=3535733&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "AddBook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//creating a constant to save the json response of the request AddBook and get the bookID from the response\r",
+							"const JsonData=pm.response.json()\r",
+							"const book_ID=(JsonData.ID)\r",
+							"pm.collectionVariables.set(\"bookID\", book_ID)\r",
+							"\r",
+							"// function cleanupScript(){\r",
+							"//     postman.setNextRequest(DeleteBook)\r",
+							"// }\r",
+							"\r",
+							"pm.test('Validate the status and the object in the response',function()\r",
+							"{\r",
+							"    // try{\r",
+							"pm.response.to.have.status(200);\r",
+							"pm.expect(JsonData).to.have.property('Msg')\r",
+							"pm.expect(JsonData.Msg).to.eq('successfully added')\r",
+							"// }\r",
+							"// catch(err){\r",
+							"// if(JsonData.msg.includes(\"exist\")){\r",
+							"//     cleanupScript();\r",
+							"// }\r",
+							"// }\r",
+							"});\r",
+							"\r",
+							"pm.test('Validate Header Keys and Values',function(){\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json;charset=UTF-8\");\r",
+							"    pm.response.to.have.header(\"Connection\", \"Keep-Alive\");\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test('Validate the response time',function(){\r",
+							"    pm.expect(pm.response.responseTime).to.below(500)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//RS123232 <RS+random number>\r",
+							"\r",
+							"//Saving the CompanyCode in code object\r",
+							"const code= pm.globals.get('companyCode');\r",
+							"\r",
+							"//Saving the random Integer in randInt to save the ISBN\r",
+							"const randInt = pm.variables.replaceIn('{{$randomInt}}');\r",
+							"\r",
+							"//isbn needs to be unique, hence isbn is code+randomInteger\r",
+							"pm.collectionVariables.set(\"isbn\",code + randInt)\r",
+							"pm.collectionVariables.set('book_name',pm.iterationData.get('BookName'))\r",
+							"console.log(pm.collectionVariables.get('book_name'))\r",
+							"\r",
+							"pm.collectionVariables.set('author_name',pm.iterationData.get('AuthorName'))\r",
+							"console.log(pm.collectionVariables.get('author_name'))\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"name\":\"{{book_name}}\",\r\n\"isbn\":\"{{isbn}}\",\r\n\"aisle\":\"2270\",\r\n\"author\":\"{{author_name}}\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/Addbook.php"
+			},
+			"response": []
+		},
+		{
+			"name": "GetBook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const GetBook = pm.response.json();\r",
+							"const schema= {\r",
+							"    \"type\": \"array\",\r",
+							"    \"default\": [],\r",
+							"    \"title\": \"Root Schema\",\r",
+							"    \"items\": {\r",
+							"        \"type\": \"object\",\r",
+							"        \"default\": {},\r",
+							"        \"title\": \"A Schema\",\r",
+							"        \"required\": [\r",
+							"            \"book_name\",\r",
+							"            \"isbn\",\r",
+							"            \"aisle\",\r",
+							"            \"author\"\r",
+							"        ],\r",
+							"        \"properties\": {\r",
+							"            \"book_name\": {\r",
+							"                \"type\": \"string\",\r",
+							"                \"default\": \"\",\r",
+							"                \"title\": \"The book_name Schema\",\r",
+							"                \"examples\": [\r",
+							"                    \"Learn Appium Automation with Java\"\r",
+							"                ]\r",
+							"            },\r",
+							"            \"isbn\": {\r",
+							"                \"type\": \"string\",\r",
+							"                \"default\": \"\",\r",
+							"                \"title\": \"The isbn Schema\",\r",
+							"                \"examples\": [\r",
+							"                    \"LF805\"\r",
+							"                ]\r",
+							"            },\r",
+							"            \"aisle\": {\r",
+							"                \"type\": \"string\",\r",
+							"                \"default\": \"\",\r",
+							"                \"title\": \"The aisle Schema\",\r",
+							"                \"examples\": [\r",
+							"                    \"2270\"\r",
+							"                ]\r",
+							"            },\r",
+							"            \"author\": {\r",
+							"                \"type\": \"string\",\r",
+							"                \"default\": \"\",\r",
+							"                \"title\": \"The author Schema\",\r",
+							"                \"examples\": [\r",
+							"                    \"John foe\"\r",
+							"                ]\r",
+							"            }\r",
+							"        },\r",
+							"        \"examples\": [{\r",
+							"            \"book_name\": \"Learn Appium Automation with Java\",\r",
+							"            \"isbn\": \"LF805\",\r",
+							"            \"aisle\": \"2270\",\r",
+							"            \"author\": \"John foe\"\r",
+							"        }]\r",
+							"    },\r",
+							"    \"examples\": [\r",
+							"        [{\r",
+							"            \"book_name\": \"Learn Appium Automation with Java\",\r",
+							"            \"isbn\": \"LF805\",\r",
+							"            \"aisle\": \"2270\",\r",
+							"            \"author\": \"John foe\"\r",
+							"        }]\r",
+							"    ]\r",
+							"}\r",
+							"\r",
+							"\r",
+							"pm.test('Validate the json schema of the response',function(){\r",
+							"pm.response.to.have.jsonSchema(schema)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/GetBook.php?ID={{bookID}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"GetBook.php"
+					],
+					"query": [
+						{
+							"key": "ID",
+							"value": "{{bookID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteBook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const JsonData=pm.response.json()\r",
+							"const msg=(JsonData.msg)\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test('Verify the message of the the body')\r",
+							"{\r",
+							"pm.expect(JsonData).to.have.property('msg')\r",
+							"pm.expect(JsonData.msg).to.includes('book is successfully deleted')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \r\n\"ID\" : \"{{bookID}}\"\r\n \r\n} \r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/DeleteBook.php"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "isbn",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bookID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "author_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "book_name",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
